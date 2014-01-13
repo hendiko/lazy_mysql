@@ -2,18 +2,6 @@
 # -*- coding: utf8 -*-
 # 2014-1-11
 
-"""
-2014-1-12 version 1.0.1:
-    1. Table.remove_column(self, column) 改进为column参数可以为Column对象。
-    2. Engine对象增加若干方法。
-    3. 增加clear()方法。
-    4. 更名为lazy_mysql。
-
-    1. Improve Table.remove_column to be able to accept Column object.
-    2. Add several instance methods to Engine object.
-    3. Add method clear() to _BaseSession object.
-    4. Renamed module to lazy_mysql.
-"""
 __author__ = 'Xavier Yin'
 __version__ = '1.0.1'
 __date__ = '2014-1-12'
@@ -27,19 +15,20 @@ MySQLdb.threadsafety = 1
 
 class Engine(object):
     """The engine to connect database."""
-    def __init__(self, host, schema, user, pw, *args, **kwargs):
+    def __init__(self, host, schema, user, pw, charset='utf8', *args, **kwargs):
         """初始化数据库连接参数。"""
         self.host = host
         self.schema = schema
         self.user = user
         self.pw = pw
+        self.charset = charset
         self.args = args
         self.kwargs = kwargs
 
     def connect(self, cursor_type=dict):
         """建立数据库连接。"""
         cursor_class = cursors.DictCursor if cursor_type == dict else cursors.Cursor
-        conn = MySQLdb.connect(self.host, self.user, self.pw, self.schema, charset='utf8', cursorclass=cursor_class)
+        conn = MySQLdb.connect(self.host, self.user, self.pw, self.schema, self.charset, cursorclass=cursor_class)
         conn.autocommit(True)
         return conn
 
