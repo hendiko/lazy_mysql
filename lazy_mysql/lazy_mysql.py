@@ -28,7 +28,7 @@ class Engine(object):
     def connect(self, cursor_type=dict):
         """建立数据库连接。"""
         cursor_class = cursors.DictCursor if cursor_type == dict else cursors.Cursor
-        conn = MySQLdb.connect(self.host, self.user, self.pw, self.schema, self.charset, cursorclass=cursor_class)
+        conn = MySQLdb.connect(self.host, self.user, self.pw, self.schema, charset=self.charset, cursorclass=cursor_class)
         conn.autocommit(True)
         return conn
 

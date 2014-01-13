@@ -3,6 +3,11 @@
 # 2014-1-11
 
 """
+2014-1-13 version 1.0.1.2:
+    1. 修复Engine.connect()方法。
+
+    1. Fixed bug in Engine.connect().
+
 2014-1-13 version 1.0.1.1:
     1. 修改Engine对象接收charset作为初始化参数。
 
