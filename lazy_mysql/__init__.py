@@ -3,7 +3,12 @@
 # 2014-1-11
 
 """
-2014-1-16 version 1.0.2:
+2014-1-16 version 1.0.2.1:
+    1. 使Table.binding_engine()方法具有返回值。
+
+    1. Making Table.binding_engine() method return itself.
+
+2014-1-16 version 1.0.2.0:
     1. 增加SQL执行日志。
     2. 增加Session的affected_rows, last_executed属性。
 
@@ -20,7 +25,7 @@
 
     1. Modified class Engine to accept charset as one of its __init__() arguments.
 
-2014-1-12 version 1.0.1:
+2014-1-12 version 1.0.1.0:
     1. Table.remove_column(self, column) 改进为column参数可以为Column对象。
     2. Engine对象增加若干方法。
     3. 增加clear()方法。

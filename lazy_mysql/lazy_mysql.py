@@ -148,6 +148,7 @@ class Table(object):
     def binding_engine(self, engine):
         """绑定用来建立数据库连接的Engine对象。"""
         self.engine = engine
+        return self
 
     def select(self, *columns):
         """SELECT操作。"""
