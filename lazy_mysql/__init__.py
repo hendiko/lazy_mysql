@@ -3,6 +3,13 @@
 # 2014-1-11
 
 """
+2014-1-16 version 1.0.2:
+    1. 增加SQL执行日志。
+    2. 增加Session的affected_rows, last_executed属性。
+
+    1. Added logger, all sql execution would be logged at debug level.
+    2. Added property affected_rows, last_executed to _BaseSession and Engine object.
+
 2014-1-13 version 1.0.1.2:
     1. 修复Engine.connect()方法。
 
@@ -25,5 +32,5 @@
     4. Renamed module to lazy_mysql.
 """
 __author__ = 'Xavier Yin'
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 __date__ = '2014-1-12'

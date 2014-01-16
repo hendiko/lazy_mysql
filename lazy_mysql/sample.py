@@ -3,6 +3,7 @@
 
 from lazy_mysql import Engine, Table, Column
 
+
 # create engine instance in order to connect local database
 engine = Engine('localhost', 'db_site_monitor', 'puppy', 'puppy')
 

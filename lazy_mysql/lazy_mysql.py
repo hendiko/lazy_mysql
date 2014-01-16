@@ -3,15 +3,17 @@
 # 2014-1-11
 
 __author__ = 'Xavier Yin'
-__version__ = '1.0.1'
-__date__ = '2014-1-12'
+__version__ = '1.0.2'
+__date__ = '2014-1-16'
 
 
 import MySQLdb
+import logging
 from MySQLdb import cursors
 from datetime import datetime
-MySQLdb.threadsafety = 1
 
+MySQLdb.threadsafety = 1
+logger = logging.getLogger('lazy_mysql')
 
 class Engine(object):
     """The engine to connect database."""
@@ -24,6 +26,7 @@ class Engine(object):
         self.charset = charset
         self.args = args
         self.kwargs = kwargs
+        self.affected_rows, self.last_executed = 0, ''
 
     def connect(self, cursor_type=dict):
         """建立数据库连接。"""
@@ -70,11 +73,12 @@ class Engine(object):
 
     def _transaction(self, sql, fetch=False, cursor_type=dict):
         """不要直接调用本方法，执行SQL语句并返回结果。"""
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.affected_rows, self.last_executed, timestamp = 0, '', datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         with self.connect(cursor_type) as cursor:
-            number = cursor.execute(sql)
-            print '{0} : {1} ROW(S) AFFECTED BY SQL :'.format(timestamp, number), cursor._last_executed
-            return cursor.fetchall() if fetch else number
+            self.affected_rows = cursor.execute(sql)
+            self.last_executed = cursor._last_executed
+            logger.debug('%s : %s ROW(S) AFFECTED WITH SQL: %s', timestamp, self.affected_rows, self.last_executed)
+            return cursor.fetchall() if fetch else self.affected_rows
 
 
 class Column(object):
@@ -173,6 +177,7 @@ class _BaseSession(object):
 
         self._where_clause, self._where_dict = '', {}
         self._distinct_clause = self._order_clause = self._limit_clause = ''
+        self.affected_rows, self.last_executed = 0, ''
         self.limit(1)   # for safety consideration
 
     def clear(self):
@@ -216,16 +221,17 @@ class _BaseSession(object):
 
     def _transaction(self, clauses, sql_dict, cursor_type):
         sql_clause = ' '.join([clause for clause in clauses if clause])
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.affected_rows, self.last_executed, timestamp = 0, '', datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         with self.engine.connect(cursor_type) as cursor:
-            number = cursor.execute(sql_clause, sql_dict)
-            print '{1} : {0} ROW(S) AFFECTED BY SQL :'.format(number, timestamp), cursor._last_executed
+            self.affected_rows = cursor.execute(sql_clause, sql_dict)
+            self.last_executed = cursor._last_executed
+            logger.debug('%s: %s ROW(S) AFFECTED WITH SQL: %s', timestamp, self.affected_rows, self.last_executed)
             if self.action == 'SELECT':
                 return cursor.fetchall()
             elif self.action == 'INSERT':
                 return cursor.lastrowid
             elif self.action in ('UPDATE', 'DELETE'):
-                return number
+                return self.affected_rows
             elif self.action == 'COUNT':
                 return cursor.fetchall()[0]['X']
 
