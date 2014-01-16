@@ -3,6 +3,11 @@
 # 2014-1-11
 
 """
+2014-1-16 version 1.0.3.0:
+    1. 修改Table.add_column，Table.remove_column方法签名。
+
+    1. Change signature of Table.add_column, Table.remove_column.
+
 2014-1-16 version 1.0.2.1:
     1. 使Table.binding_engine()方法具有返回值。
 
@@ -37,5 +42,5 @@
     4. Renamed module to lazy_mysql.
 """
 __author__ = 'Xavier Yin'
-__version__ = '1.0.2'
-__date__ = '2014-1-12'
+__version__ = '1.0.3'
+__date__ = '2014-1-16'

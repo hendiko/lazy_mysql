@@ -3,7 +3,7 @@
 # 2014-1-11
 
 __author__ = 'Xavier Yin'
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 __date__ = '2014-1-16'
 
 
@@ -14,6 +14,7 @@ from datetime import datetime
 
 MySQLdb.threadsafety = 1
 logger = logging.getLogger('lazy_mysql')
+
 
 class Engine(object):
     """The engine to connect database."""
@@ -134,16 +135,19 @@ class Table(object):
         """初始化数据表，可以在columns参数中动态传入字段名称，或者覆写本方法并在新方法中直接定义字段。"""
         self.engine = _engine
         self.table_name = table_name
-        for column in columns:
-            self.add_column(column)
+        self.add_column(*columns)
 
-    def add_column(self, column):
+    def add_column(self, *columns):
         """增加字段。"""
-        setattr(self, column.name, column) if isinstance(column, Column) else setattr(self, column, Column(column))
+        for column in columns:
+            setattr(self, column.name, column) if isinstance(column, Column) else setattr(self, column, Column(column))
+        return self
 
-    def remove_column(self, column):
+    def remove_column(self, *columns):
         """删除字段。"""
-        self.__delattr__(column.name) if isinstance(column, Column) else self.__delattr__(column)
+        for column in columns:
+            self.__delattr__(column.name) if isinstance(column, Column) else self.__delattr__(column)
+        return self
 
     def binding_engine(self, engine):
         """绑定用来建立数据库连接的Engine对象。"""
