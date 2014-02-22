@@ -2,11 +2,6 @@
 # -*- coding: utf8 -*-
 # 2014-1-11
 
-__author__ = 'Xavier Yin'
-__version__ = '1.0.3'
-__date__ = '2014-1-16'
-
-
 import MySQLdb
 import logging
 from MySQLdb import cursors
