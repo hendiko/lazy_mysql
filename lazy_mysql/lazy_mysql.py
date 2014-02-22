@@ -127,6 +127,13 @@ class Column(object):
         _ceil = '{0}_{1}'.format(self.name, 'ceil')
         return '{0} BETWEEN %({1})s AND %({2})s'.format(self.name, _floor, _ceil), {_floor: floor, _ceil: ceil}
 
+    def is_null(self, boolean=True):
+        name = '{0}_{1}'.format(self.name, 'is_null')
+        if boolean:
+            return '{0} IS %({1})s'.format(self.name, name), {name: None}
+        else:
+            return '{0} IS NOT %({1})s'.format(self.name, name), {name: None}
+
 
 class Table(object):
     """数据表对象。"""
