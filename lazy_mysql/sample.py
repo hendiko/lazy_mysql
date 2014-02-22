@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+go#!/usr/bin/env python
 # -*- coding: utf8 -*-
 
 from lazy_mysql import Engine, Table, Column
