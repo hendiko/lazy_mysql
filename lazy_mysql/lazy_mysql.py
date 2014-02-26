@@ -232,14 +232,17 @@ class _BaseSession(object):
         with self.engine.connect(cursor_type) as cursor:
             self.affected_rows = cursor.execute(sql_clause, sql_dict)
             self.last_executed = cursor._last_executed
-            logger.debug('%s: %s ROW(S) AFFECTED WITH SQL: %s', timestamp, self.affected_rows, self.last_executed)
             if self.action == 'SELECT':
+                logger.debug('%s: %s ROW(S) AFFECTED WITH SQL: %s', timestamp, self.affected_rows, self.last_executed)
                 return cursor.fetchall()
             elif self.action == 'INSERT':
+                logger.info('%s: %s ROW(S) AFFECTED WITH SQL: %s', timestamp, self.affected_rows, self.last_executed)
                 return cursor.lastrowid
             elif self.action in ('UPDATE', 'DELETE'):
+                logger.info('%s: %s ROW(S) AFFECTED WITH SQL: %s', timestamp, self.affected_rows, self.last_executed)
                 return self.affected_rows
             elif self.action == 'COUNT':
+                logger.debug('%s: %s ROW(S) AFFECTED WITH SQL: %s', timestamp, self.affected_rows, self.last_executed)
                 return cursor.fetchall()[0]['X']
 
 

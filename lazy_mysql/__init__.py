@@ -45,7 +45,12 @@
     1. Column对象增加is_null()方法，支持MYSQL的IS NULL语句。
 
     1. Improved object Column by adding method is_null() in order to support MySql syntax IS NULL.
+
+2014-2-26 version 1.1.1:
+    1. 修改Session执行日志级别，SELECT, COUNT操作属于DEBUG级别，INSERT, UPDATE, DELETE属于INFO级别。
+
+    1. Reset logging level of SELECT, COUNT operations to DEBUG, logging level of INSERT, UPDATE, DELETE operations to INFO.
 """
 __author__ = 'Xavier Yin'
-__version__ = '1.1.0'
-__date__ = '2014-2-22'
+__version__ = '1.1.1'
+__date__ = '2014-2-26'
