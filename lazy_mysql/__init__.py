@@ -50,7 +50,12 @@
     1. 修改Session执行日志级别，SELECT, COUNT操作属于DEBUG级别，INSERT, UPDATE, DELETE属于INFO级别。
 
     1. Reset logging level of SELECT, COUNT operations to DEBUG, logging level of INSERT, UPDATE, DELETE operations to INFO.
+
+2014-4-21 version 1.1.2:
+    1. _Select类增加group_by()方法。
+
+    1. Added method group_by() in class _Select.
 """
 __author__ = 'Xavier Yin'
-__version__ = '1.1.1'
-__date__ = '2014-2-26'
+__version__ = '1.1.2'
+__date__ = '2014-4-21'

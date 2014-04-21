@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf8 -*-
-# 2014-1-11
+# 2014-1-11 by Xavier Yin
+# 2014-4-21 v1.1.2
 
 import MySQLdb
 import logging
@@ -250,6 +251,12 @@ class _Select(_BaseSession):
     def __init__(self, engine, table_name, action, *columns, **assignments):
         super(_Select, self).__init__(engine, table_name, action, *columns, **assignments)
         self._action_clause = ', '.join([str(column) for column in self._columns]) or '*'
+        self._group_by_clause = None
+
+    def group_by(self, column):
+        self._group_by_clause = 'GROUP BY %s' % str(column)
+        return self
+
 
     def go(self, cursor_type=dict):
         clauses = [self.action, self._distinct_clause, self._action_clause, 'FROM', self.table_name,
