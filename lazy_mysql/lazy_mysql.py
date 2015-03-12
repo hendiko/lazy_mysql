@@ -121,7 +121,7 @@ class Engine(object):
 class Pool(object):
 
     def __init__(self, host, schema, user, pw, port=3306, charset='utf8',
-                 cursorclass='dict', autocommit=True, pool_size=2, wait_time=5, buffers=4, *args, **kwargs):
+                 cursorclass='dict', autocommit=True, pool_size=2, wait_time=5, extras=4, *args, **kwargs):
         """初始化数据库连接参数。"""
         self.host = host
         self.schema = schema
@@ -138,7 +138,7 @@ class Pool(object):
         self.wait_time = wait_time
         self.lock = RLock()
         self.pool_size = pool_size
-        self.limits = buffers + self.pool_size
+        self.limits = extras + self.pool_size
         self._count = 0
         self.pool = Queue(self.pool_size)
         # for i in range(pool_size):
