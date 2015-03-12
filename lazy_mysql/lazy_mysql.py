@@ -10,7 +10,7 @@ Manipulate MySQL database in a ORM style.
 条件支持WHERE, ORDER BY (DESC), DISTINCT, LIMIT。
 """
 __author__ = 'Xavier Yin'
-__version__ = '1.2.0'
+__version__ = '1.2.1'
 __date__ = '2015-3-12'
 
 
@@ -443,40 +443,6 @@ class _Count(_BaseSession):
         sql_dict = self._where_dict
         return self._transaction(clauses, sql_dict, cursorclass)
 
-
-# ---------------------------------- SQLite3 --------------------------------------
-import sqlite3
-
-
-class SQLiteEngine(object):
-    def __init__(self, db=':memory:'):
-        self.db = db
-
-    def connect(self, *args, **kwargs):
-        return sqlite3.connect(self.db)
-
-    def show_tables(self):
-        sql = "SELECT name FROM sqlite_master WHERE type='table'"
-        return self._transaction(sql, fetch=True)
-
-    def show_create_table(self, table_name):
-        sql = "SELECT sql FROM sqlite_master WHERE type='table' AND name=:table"
-        result = self._transaction(sql, {'table': table_name}, True)
-        return result[0].get('sql', []) if result else result
-
-    def _transaction(self, sql, params_dict={}, fetch=False, cursor_type=dict):
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        conn = sqlite3.connect(self.db)
-        if cursor_type == dict:
-            conn.row_factory = lambda cursor, row: dict([(col[0], row[idx]) for idx, col in enumerate(cursor.description)])
-        cursor = conn.cursor()
-        cursor.execute(sql, params_dict)
-        print '{0} : {1} ROW(S) AFFECTED BY SQL :'.format(timestamp, cursor.rowcount), sql
-        result = cursor.fetchall() if fetch else cursor.rowcount
-        conn.close()
-        return result
-
-# ---------------------------------------------------------------------------------
 
 if __name__ == '__main__':
     pass
