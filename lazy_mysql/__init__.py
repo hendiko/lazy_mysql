@@ -55,7 +55,12 @@
     1. _Select类增加group_by()方法。
 
     1. Added method group_by() in class _Select.
+
+2015-3-12 version 1.2.1:
+    1. 增加了 Pool 对象作为连接池。
+
+    1. Added class Pool to manage Engine objects.
 """
 __author__ = 'Xavier Yin'
-__version__ = '1.1.2'
-__date__ = '2014-4-21'
+__version__ = '1.2.1'
+__date__ = '2015-3-12'
