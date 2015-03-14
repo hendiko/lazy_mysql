@@ -66,6 +66,15 @@ class Engine(object):
             self.connection.autocommit(self.autocommit)
         return self.connection
 
+    def close(self):
+        try:
+            self.connection.close()
+        except Exception as e:
+            if self.debug:
+                logger.exception(str(e))
+        finally:
+            self.connection = None
+
     def create_database(self, table_name, confirm=False):
         """创建新的数据库。"""
         if confirm:
@@ -110,8 +119,9 @@ class Engine(object):
             cursor = conn.cursor()
             self.affected_rows = cursor.execute(sql)
         except Exception as e:
-            logger.exception(str(e))
-            self.connection = None
+            if self.debug:
+                logger.exception(str(e))
+            self.close()
             conn = self.connect(cursor_class)
             cursor = conn.cursor()
             self.affected_rows = cursor.execute(sql)
@@ -362,8 +372,9 @@ class _BaseSession(object):
             cursor = conn.cursor()
             self.affected_rows = cursor.execute(sql_clause, sql_dict)
         except Exception as e:
-            logger.exception(str(e))
-            _engine.connection = None
+            if _engine.debug:
+                logger.exception(str(e))
+            _engine.close()
             conn = _engine.connect(cursor_class)
             cursor = conn.cursor()
             self.affected_rows = cursor.execute(sql_clause, sql_dict)
