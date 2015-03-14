@@ -56,14 +56,19 @@ class Engine(object):
     def cursor_class(self, _class):
         self._cursor_class = _class
 
-    def connect(self, cursor_class="dict"):
+    def connect(self, cursor_class=None):
         """建立数据库连接。"""
-        self.cursor_class = cursor_class
         if not self.connection:
             self.connection = MySQLdb.connect(
                 self.host, self.user, self.pw, self.schema, port=self.port,
-                charset=self.charset, cursorclass=self.cursor_class)
+                charset=self.charset, cursorclass=cursor_class)
             self.connection.autocommit(self.autocommit)
+        if cursor_class is None:
+            self.connection.cursorclass = self.cursor_class
+        elif cursor_class == "dict":
+            self.connection.cursorclass = cursors.DictCursor
+        else:
+            self.connection.cursorclass = cursors.Cursor
         return self.connection
 
     def close(self):
@@ -111,7 +116,7 @@ class Engine(object):
         sql = 'SET NAMES `%(name)s`' % {'name': charset.upper()}
         return self._transaction(sql)
 
-    def _transaction(self, sql, fetch=False, cursor_class="dict"):
+    def _transaction(self, sql, fetch=False, cursor_class=None):
         """不要直接调用本方法，执行SQL语句并返回结果。"""
         self.affected_rows, self.last_executed, timestamp = 0, '', datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         try:
@@ -130,6 +135,7 @@ class Engine(object):
         if self.debug:
             logger.debug('%s : %s ROW(S) AFFECTED WITH SQL: %s', timestamp, self.affected_rows, self.last_executed)
         result = cursor.fetchall() if fetch else self.affected_rows
+        cursor.close()
         return result
 
 
@@ -385,14 +391,17 @@ class _BaseSession(object):
         self.last_executed = cursor._last_executed
         if _engine.debug:
             logger.debug('%s: %s ROW(S) AFFECTED WITH SQL: %s', timestamp, self.affected_rows, self.last_executed)
+        result = None
         if self.action == 'SELECT':
-            return cursor.fetchall()
+            result = cursor.fetchall()
         elif self.action == 'INSERT':
-            return cursor.lastrowid
+            result = cursor.lastrowid
         elif self.action in ('UPDATE', 'DELETE'):
-            return self.affected_rows
+            result = self.affected_rows
         elif self.action == 'COUNT':
-            return cursor.fetchall()[0]['X']
+            result = cursor.fetchall()[0]['X']
+        cursor.close()
+        return result
 
 
 class _Select(_BaseSession):
@@ -405,7 +414,7 @@ class _Select(_BaseSession):
         self._group_by_clause = 'GROUP BY %s' % (str(column))
         return self
 
-    def go(self, cursor_class="dict"):
+    def go(self, cursor_class=None):
         clauses = [self.action, self._distinct_clause, self._action_clause, 'FROM', self.table_name,
                    self._where_clause, self._group_by_clause, self._order_clause, self._limit_clause]
         sql_dict = self._where_dict
@@ -418,7 +427,7 @@ class _Insert(_BaseSession):
         self._action_clause = ', '.join(['{0}=%(_insert_{0})s'.format(k) for k in self._assignments])
         self._action_dict = dict(('_insert_%s' % k, v) for k, v in self._assignments.items())
 
-    def go(self, cursor_class="dict"):
+    def go(self, cursor_class=None):
         clauses = [self.action, 'INTO', self.table_name, 'SET', self._action_clause]
         sql_dict = self._action_dict
         return self._transaction(clauses, sql_dict, cursor_class)
@@ -430,7 +439,7 @@ class _Update(_BaseSession):
         self._action_clause = ', '.join(['{0}=%(_update_{0})s'.format(k) for k in self._assignments])
         self._action_dict = dict(('_update_%s' % k, v) for k, v in self._assignments.items())
 
-    def go(self, cursor_class="dict"):
+    def go(self, cursor_class=None):
         clauses = [self.action, self.table_name, 'SET', self._action_clause, self._where_clause,
                    self._order_clause, self._limit_clause]
         sql_dict = dict()
@@ -442,7 +451,7 @@ class _Delete(_BaseSession):
     def __init__(self, engine, table_name, action, *columns, **assignments):
         super(_Delete, self).__init__(engine, table_name, action, *columns, **assignments)
 
-    def go(self, cursor_class="dict"):
+    def go(self, cursor_class=None):
         clauses = [self.action, 'FROM', self.table_name, self._where_clause, self._order_clause, self._limit_clause]
         sql_dict = self._where_dict
         return self._transaction(clauses, sql_dict, cursor_class)
@@ -455,7 +464,7 @@ class _Count(_BaseSession):
         self._action_clause = ' '.join(['DISTINCT' if col and distinct else '', "'*'" if col is None else str(col)])
         self._action_clause = 'COUNT({0})'.format(self._action_clause)
 
-    def go(self, cursor_class="dict"):
+    def go(self, cursor_class=None):
         clauses = ['SELECT', self._action_clause, 'AS X FROM', self.table_name, self._where_clause, self._limit_clause]
         sql_dict = self._where_dict
         return self._transaction(clauses, sql_dict, cursor_class)
