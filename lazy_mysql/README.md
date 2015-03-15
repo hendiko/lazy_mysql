@@ -8,10 +8,10 @@ TOC
 2. [Installation](#installation)
 3. [Tutorial](#tutorial)
 4. [API](#api)
-    1. [Engine](#engine)
-    2. [Pool](#pool)
-    3. [Column](#column)
-    4. [Table](#table)
+    1. [Engine](#1-engine)
+    2. [Pool](#2-pool)
+    3. [Column](#3-column)
+    4. [Table](#4-table)
     
 Intro
 ------
