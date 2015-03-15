@@ -29,7 +29,19 @@ class Engine(object):
     """The engine to connect database."""
     def __init__(self, host, schema, user, pw, port=3306, charset='utf8',
                  cursor_class='dict', autocommit=True, debug=True, *args, **kwargs):
-        """初始化数据库连接参数。"""
+        """初始化数据库连接参数。
+        :param host: 数据库主机。
+        :param schema: 数据库名称。
+        :param user: 用户名。
+        :param pw: 密码。
+        :param port: 端口。
+        :param charset: 字符集。
+        :param cursor_class: 游标类，默认值为 dict，其他为 tuple。
+        :param autocommit: 自动提交。
+        :param debug: 调试模式。
+        :param args: 其他参数。
+        :param kwargs: 其他参数。
+        """
         self.host = host
         self.schema = schema
         self.user = user
@@ -81,7 +93,10 @@ class Engine(object):
             self.connection = None
 
     def create_database(self, table_name, confirm=False):
-        """创建新的数据库。"""
+        """创建新的数据库。
+        :param table_name: 数据表名称。
+        :param confirm: 如果为真，则新建数据表。
+        """
         if confirm:
             sql = 'CREATE DATABASE `%(name)s`' % {'name': table_name}
             return self._transaction(sql)
@@ -144,7 +159,22 @@ class Pool(object):
     def __init__(self, host, schema, user, pw, port=3306, charset='utf8',
                  cursor_class='dict', autocommit=True, debug=True, pool_size=2,
                  extras=4, wait_time=5, *args, **kwargs):
-        """初始化数据库连接参数。"""
+        """初始化数据库连接参数。
+        :param host: 数据库主机。
+        :param schema: 数据库。
+        :param user: 用户名。
+        :param pw: 密码。
+        :param port: 端口。
+        :param charset: 字符集。
+        :param cursor_class: 游标类型。
+        :param autocommit: 自动提交。
+        :param debug: 调试模式。
+        :param pool_size: 连接池大小。
+        :param extras: 允许超出连接池大小。
+        :param wait_time: 从连接池获取 Engine 对象超时时间。
+        :param args: 其他参数。
+        :param kwargs: 其他参数。
+        """
         self.host = host
         self.schema = schema
         self.user = user
@@ -164,6 +194,10 @@ class Pool(object):
         self.limits = extras + self.pool_size
         self._count = 0
         self.pool = Queue(self.pool_size)
+
+    @property
+    def count(self):
+        return self._count
 
     def spawn_engine(self):
         self.lock.acquire()
