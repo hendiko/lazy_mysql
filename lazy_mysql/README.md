@@ -53,17 +53,43 @@ Tutorial
     s = Schedule()
           
     # SELECT * FROM schedule LIMIT 1;
-    print s.select().go() 
+    s.select().go() 
 
     # SELECT * FROM schedule;
-    print s.select().limit().go()
+    s.select().limit().go()
     
     # SELECT taskName, status FROM schedule WHERE (taskId=1) LIMIT 1;
-    print s.select(s.task_name, s.status).where(schedule.task_id == 1).go()
+    s.select(s.task_name, s.status).where(schedule.task_id == 1).go()
+    
+    # SELECT DISTINCT taskName FROM schedule WHERE (scheduleId=1) GROUP BY taskName ORDER BY taskId DESC LIMIT 1, 4;
+    s.select(s.task_name).where(s.schedule_id == 1).distinct().order(s.task_id, desc=True).group_by(s.task_name).limit(1, 4).go()
+    
+    # SELECT * FROM schedule WHERE (scheduleId=1 AND taskId=2) OR (taskId=2) AND (taskName='query') LIMIT 1;
+    s.select().where(s.schedule_id == 1, s.task_id == 3).where(s.task_id == 2).where_and(s.task_name == "query").go()
+    
+### 4. Insert 操作
 
+    # INSERT INTO schedule SET taskName='query';
+    s.insert(**{s.task_name.name: 'query'}).go()
+    
+    # 或者
+    s.insert(taskName="query").go()
+    
+### 5. Update 操作
 
-API
-----
+    # UPDATE schedule SET taskName='query2' WHERE (scheduleId=5) LIMIT 1;
+    s.update(**{s.task_name.name: "query2"}).where(s.schedule_id == 5).go()
 
-### Engine
+    # 或者
+    s.update(taskName="query2").where(s.schedule_id == 5).go()
+    
+### 6. Delete 操作
+
+    # DELETE FROM schedule WHERE (scheduleId=5) LIMIT 1;
+    s.delete().where(s.schedule_id == 5).go()
+    
+### 7. Count 操作
+
+    # SELECT COUNT(DISTINCT scheduleId) AS X FROM schedule WHERE (scheduleId>2) LIMIT 1;
+    s.count(s.schedule_id, distinct=True).where(s.schedule_id > 2).go()
 
