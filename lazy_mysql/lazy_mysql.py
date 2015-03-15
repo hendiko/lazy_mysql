@@ -10,7 +10,7 @@ Manipulate MySQL database in a ORM style.
 条件支持WHERE, ORDER BY (DESC), DISTINCT, LIMIT。
 """
 __author__ = 'Xavier Yin'
-__version__ = '1.2.2'
+__version__ = '1.2.3'
 __date__ = '2015-3-14'
 
 
