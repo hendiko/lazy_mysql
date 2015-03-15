@@ -23,6 +23,11 @@ Intro
 * **Table**    : 该对象映射到数据表。
 * **Column** : 该对象映射到数据表字段。
 
+### Dependencies
+
+* Python 2.6 - 2.7
+* MySQLdb-python 1.2.3+
+
 
 Installation
 --------------
