@@ -8,10 +8,15 @@
 Manipulate MySQL database in a ORM style.
 目前支持SELECT, INSERT, DELETE, UPDATE, COUNT操作。
 条件支持WHERE, ORDER BY (DESC), DISTINCT, LIMIT。
+
+2015-4-1(1.2.6)
+1. 修改了 Column 的 in，not_in 方法，以修复在 MySQL-python 1.2.3 出现使用 Column.in() 方法时，由于 MySQL 自动转移造成参
+数不正确的 BUG。该 BUG 在 MySQL-python 1.2.5 上没有发现，
+2. Column 对象增加了 max，min 方法。
 """
 __author__ = 'Xavier Yin'
-__version__ = '1.2.3'
-__date__ = '2015-3-14'
+__version__ = '1.2.6'
+__date__ = '2015-4-1'
 
 
 from datetime import datetime
@@ -277,8 +282,20 @@ class Column(object):
         return '{0} LIKE %({1})s'.format(self.name, name), {name: other}
 
     def in_(self, *other):
-        name = '{0}_{1}'.format(self.name, 'in')
-        return '{0} IN %({1})s'.format(self.name, name), {name: other}
+        names, maps = [], {}
+        for index in range(len(other)):
+            name = '{0}_{1}_{2}'.format(self.name, 'in', index)
+            names.append("%({0})s".format(name))
+            maps[name] = other[index]
+        return '{0} IN ({1})'.format(self.name, ",".join(names)), maps
+
+    def not_in(self, *other):
+        names, maps = [], {}
+        for index in range(len(other)):
+            name = '{0}_{1}_{2}'.format(self.name, 'in', index)
+            names.append("%({0})s".format(name))
+            maps[name] = other[index]
+        return '{0} NOT IN ({1})'.format(self.name, ",".join(names)), maps
 
     def between(self, floor, ceil):
         _floor = '{0}_{1}'.format(self.name, 'floor')
@@ -291,6 +308,18 @@ class Column(object):
             return '{0} IS %({1})s'.format(self.name, name), {name: None}
         else:
             return '{0} IS NOT %({1})s'.format(self.name, name), {name: None}
+
+    def sum(self):
+        return 'SUM({0})'.format(self.name)
+
+    def count(self):
+        return "COUNT({0})".format(self.name)
+
+    def max(self):
+        return "MAX({0})".format(self.name)
+
+    def min(self):
+        return "MIN({0})".format(self.name)
 
 
 class Table(object):
@@ -444,8 +473,8 @@ class _Select(_BaseSession):
         self._action_clause = ', '.join([str(column) for column in self._columns]) or '*'
         self._group_by_clause = None
 
-    def group_by(self, column):
-        self._group_by_clause = 'GROUP BY %s' % (str(column))
+    def group_by(self, *columns):
+        self._group_by_clause = 'GROUP BY %s' % (','.join([str(column) for column in columns]))
         return self
 
     def go(self, cursor_class=None):
