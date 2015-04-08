@@ -84,9 +84,9 @@
     1. Modified class Engine to accept charset as one of its __init__() arguments.
 
 
- 2014-1-12 version 1.0.1.0
- ------------------------------
- 
+2014-1-12 version 1.0.1.0
+------------------------------
+
     1. Table.remove_column(self, column) 改进为column参数可以为Column对象。
     2. Engine对象增加若干方法。
     3. 增加clear()方法。

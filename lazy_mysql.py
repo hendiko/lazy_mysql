@@ -12,7 +12,6 @@ It provides five SQL operations, they are SELECT, INSERT, DELETE, UPDATE, COUNT.
 本模块包括 Engine, Pool, Session, Table, Column 五个对象。
 目前支持 SELECT, INSERT, DELETE, UPDATE, COUNT 操作。
 条件支持 WHERE, ORDER BY, GROUP BY, DISTINCT, LIMIT。
-
 """
 __author__ = 'Xavier Yin'
 __version__ = '1.2.6'

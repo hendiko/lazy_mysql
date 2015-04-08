@@ -1,5 +1,7 @@
-lazy_mysql
-=======
+lazy_mysql [Chinese](./README.CH.md)
+==========================
+
+<br>
 
 TOC
 -----
@@ -12,51 +14,55 @@ TOC
     2. [Pool](#2-pool)
     3. [Column](#3-column)
     4. [Table](#4-table)
-    
+
+<br>
+
 Intro
 ------
 
-本模块基于 `MySQL-python`  之上提供了四个常用对象，分别是：
+The module which is based on `MySQL-python` provides four main classes:
 
-* **Engine**   : 负责连接数据库，执行 SQL 语句。
-* **Pool**      : 数据库连接池，负责管理 Engine 对象。
-* **Table**    : 该对象映射到数据表。
-* **Column** : 该对象映射到数据表字段。
+* **Engine**   : connect to MySQL server and execute SQL statements.
+* **Pool**      : a pool that manages Engine objects.
+* **Table**    : a python object mapping table in database.
+* **Column** : a python object mapping field in database. 
 
 ### Dependencies
 
 * Python 2.6 - 2.7
 * MySQLdb-python 1.2.3+
 
+<br>
 
 Installation
 --------------
 
-从 [GitHub](https://github.com/hendiko/PyLazy.git) 下载。
+Download from [GitHub](https://github.com/hendiko/PyLazy.git).
 
     git clone https://github.com/hendiko/PyLazy.git
-    
-或者直接下载 `lazy_mysql.py` 文件，将 `lazy_mysql.py` 文件放到项目中任意可导入目录均可。
 
+Or you can simply download `lazy_mysql.py` then put it anywhere in your project.
+   
+<br>
 
 Tutorial
 ---------
 
-### 1. 建立数据库连接
+### 1. Connect to server
 
-使用 **Engine** 对象连接数据库。
+Use **Engine**.
 
     from lazy_mysql import Engine, Pool, Table, Column
     
     engine = Engine('localhost', 'test', 'root', 'root')
-    
-如果要应付多线程多并发连接，可使用 **Pool** 对象来管理数据库连接，**Pool** 的作用是提供一个连接池，用以管理多个 **Engine** 对象。
+   
+It had better use **Pool** object to set up a pool to manage **Engine** objects to handle multi threads.
 
-    pool = Pool('localhost', 'test', 'root', 'root', pool_size=4, extras=4)
-    
-### 2. 建立 Table 类
+    pool = Pool('localhost', 'test', 'root', 'root', pool_size=4, extras=4)    
 
-新建一个 **Table** 对象来映射数据表，只需要新建一个类继承自 **Table** 类。
+### 2. Create **Table** object
+
+To create a **Table** object which maps a table in database, you need to define a class which inherits class **Table**.
 
     class Schedule(Table):
     
@@ -68,13 +74,13 @@ Tutorial
             self.task_name = Column('taskName')
             self.status = Column('status')
 
-_engine 参数可以接收一个 *Engine* 或 *Pool* 实例对象。
+The argument of **_engine** could be either an **Engine** instance or a **Pool** instance.
 
-在初始化中定义数据表字段，你可以只初始化部分字段而非全部字段，**Column** 对象代表一个字段对象，实例化一个 **Column** 字段仅需要传入一个字段名称，**Column** 对象不会检查字段类型及合法性。
+You could only define those fields you need to use instead of all of the fields that exsits in your database table. A **Column** object needs to be passed in field name to initialize itself, it won't check the field type nor validate the value to be written into database.
 
-### 3. Select 操作
+### 3. Select
 
-    # 实例化一个数据表对象。
+    # Create a Table instance.
     s = Schedule()
           
     # SELECT * FROM schedule LIMIT 1;
@@ -91,29 +97,32 @@ _engine 参数可以接收一个 *Engine* 或 *Pool* 实例对象。
     
     # SELECT * FROM schedule WHERE (scheduleId=1 AND taskId=2) OR (taskId=2) AND (taskName='query') LIMIT 1;
     s.select().where(s.schedule_id == 1, s.task_id == 3).where(s.task_id == 2).where_and(s.task_name == "query").go()
-    
-### 4. Insert 操作
+
+### 4. Insert
 
     # INSERT INTO schedule SET taskName='query';
     s.insert(**{s.task_name.name: 'query'}).go()
     
-    # 或者
+    # or a deprecated way which is more convenient but less reliable.
     s.insert(taskName="query").go()
     
-### 5. Update 操作
+
+### 5. Update
 
     # UPDATE schedule SET taskName='query2' WHERE (scheduleId=5) LIMIT 1;
     s.update(**{s.task_name.name: "query2"}).where(s.schedule_id == 5).go()
 
-    # 或者
+    # or a deprecated way which is more convenient but less reliable.
     s.update(taskName="query2").where(s.schedule_id == 5).go()
     
-### 6. Delete 操作
+
+### 6. Delete
 
     # DELETE FROM schedule WHERE (scheduleId=5) LIMIT 1;
     s.delete().where(s.schedule_id == 5).go()
     
-### 7. Count 操作
+
+### 7. Count
 
     # SELECT COUNT(DISTINCT scheduleId) AS X FROM schedule WHERE (scheduleId>2) LIMIT 1;
     s.count(s.schedule_id, distinct=True).where(s.schedule_id > 2).go()
@@ -124,134 +133,130 @@ API
 
 ### 1. Engine
 
-**Engine** 对象负责数据库连接，执行 SQL 语句。
+**Engine** - connect to MySQL server and execute SQL statements.
 
 #### 1.1. \__init\__(self, host, schema, user, pw, port=3306, charset='utf8', cursor_class='dict', autocommit=True, debug=True, \*args, \*\*kwargs):
 
-* host: 数据库主机
-* schema: 数据库名称。
-* user: 用户名。
-* pw: 密码。
-* port: 端口。
-* charset: 字符集。
-* cursor_class: 游标类型，默认值为 'dict'，其他均返回 tuple 类型的结果集。
-* autocommit: 自动提交。
-* debug: 调试模式，若为真，则打印 SQL 语句。
-* args: 其他 MySQLdb.connect() 参数。
-* kwargs: 其他 MySQLdb.connect() 参数。
+* host: host address.
+* schema: database name.
+* user: user name.
+* pw: password.
+* port: port.
+* charset: charset.
+* cursor_class: use DictCursor if 'dict' given, or Cursor.
+* autocommit: automatically commit.
+* debug: if true, log the every SQL statement executed.
+* args: other arguments for MySQLdb.connect()
+* kwargs: other keyword arguments for MySQLdb.connect().
 
 #### 1.2. affected_rows
 
-执行 SQL 语句影响的数据表行数。
+The number of rows that have been affected by executing SQL statement.
 
 #### 1.3. last_executed
 
-最后一次成功执行的 SQL 语句。
+The last SQL statement that is executed successfully.
 
 #### 1.4. cursor_class
 
-数据库连接游标类型。如果 `cursor_class='dict'`，则使用 DictCursor，否则使用 Cursor。
+if a string 'dict' was given, use `DictCursor` instead of `Cursor`.
 
 #### 1.5. connect(self, cursor_class=None)
 
-返回 **Connection** 对象，连接数据库，如果 cursor_class 为 None，则使用默认的 self.cursor_class 属性进行连接。
+Return a **Connection** object. If *cursor_class* is *None*, the `self.cursor_class` will be used.
 
 #### 1.6. close(self)
 
-关闭 **Connection** 对象。
-
+Close connection.
 
 ### 2. Pool
 
 #### 2.1. \__init\__(self, host, schema, user, pw, port=3306, charset='utf8', cursor_class='dict', autocommit=True, debug=True, pool_size=2, extras=4, wait_time=5, \*args, \*\*kwargs):
 
-初始化连接池，用以管理 **Engine** 对象。**Pool** 内部有一个保存 **Engine** 对象的队列 **self.pool**。Pool 允许在连接池外额外创建一些 Engine 对象用以应付超出预期的请求数量。
+Initialize a **Pool** object to manage a number of **Engine** objects. A queue object that exsits inside the **Pool** object actually reserves all **Engine** objects. You could use the parameter **pool_size** to limit the number of **Engine** in pool. It also allows you to create a number of extra **Engine** objects outside the pool, the extra engines would cost more because they are created on the fly and be destroyed after use, you probably want to use them only in case there are many requests coming suddenly.
 
-**Pool** 初始化参数与 **Engine** 初始化参数大部分相同。
+The most of arguments of Pool is similar to those in Engine.
 
-* pool_size: 设置连接池大小。
-* extras: 当连接池满时，允许额外创建的 **Engine** 对象最大数量。
-* wait_time: 当连接池为空时，等待获取 **Engine** 的超时时间。
+* pool_size: the maximum number of engines reserved in pool.
+* extras: the maximun number of engines existing outside the pool.
+* wait_time: the timeout seconds waiting for Engine to be acquired from the pool.
 
 #### 2.2. count
 
-当前所有 **Engine** 对象数量。
+The current number of Engines both inside or outside the pool.
 
 #### 2.3. put(self, engine=None)
 
-回收 **Engine** 对象到连接池。
+Put the Engine object back to the pool.
 
 #### 2.4. get(self)
 
-从连接池申请 **Engine** 对象。
+Acquire Engine object from the pool.
 
 #### 2.5. spawn_engine(self):
 
-创建新的 **Engine** 对象。
+Create a new Engine object.
 
 ### 3. Column
 
-数据库字段对象。
-
 #### 3.1. \__init\__(self, name)
 
-参数 *name* 为数据库字段名称。
+The argument name is a string that is name of field in database.
 
 #### 3.2. like(self, other)
 
-实现 SQL LIKE 语句。
+The like statement in SQL.
 
 #### 3.3. in_(self, \*other)
 
-实现 SQL IN 语句。
+The in statement in SQL.
 
 #### 3.4. between(self, floor, ceil)
 
-实现 SQL BETWEEN 语句。
+The between statement in SQL.
 
 #### 3.5. is_null(self, boolean=True)
 
-实现 SQL IS NULL 或 IS NOT NULL 语句。
+The IS NULL or IS NOT NULL in SQL.
+
 
 ### 4. Table
 
 #### 4.1. \__init\__(self, table_name, \_engine=None, \*columns)
 
-实例化 **Table** 对象。
+Initialize a **Table** object.
 
-* table_name: 数据表名称。
-* \_engine: 支持传入 **Engine** 或 **Pool** 对象。
+* table_name: a string that is the name of table.
+* \_engine: either an **Engine** object or a **Pool** object.
 
 #### 4.2. add_column(self, \*columns)
 
-向 Table 添加字段属性。
+Add a column into Table object.
 
 #### 4.3. remove_column(self, \*columns)
 
-从 Table 删除字段属性。
+Remove a column from Table object.
 
 #### 4.4. binding_engine(self, engine)
 
-重新绑定数据表的 engine 属性，参数 *engine* 支持传入 **Engine** 或 **Pool** 对象。
+Binding either an Engine or a Pool object to this Table object.
 
 #### 4.5. select(self, \*columns)
 
-执行 SELECT 语句。
+Execute SELECT statement.
 
 #### 4.6. insert(self, \**assignments)
 
-执行 INSERT 语句。
+Execute INSERT statement.
 
 #### 4.7. update(self, \**assignments)
 
-执行 UPDATE 语句。
+Execute UPDATE statement.
 
 #### 4.8 delete(self)
 
-执行 DELETE 语句。
+Execute DELETE statement.
 
 #### 4.9. count(self, column=None, distinct=None)
 
-执行 COUNT 语句。
-
-
+Execute COUNT statement.
