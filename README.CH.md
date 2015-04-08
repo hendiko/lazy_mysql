@@ -1,5 +1,9 @@
-lazy_mysql [English](./README.md)
-======================
+lazy_mysql 
+=======
+
+Click to see [English Version](./README.md)
+
+<br>
 
 TOC
 -----
@@ -13,6 +17,8 @@ TOC
     3. [Column](#3-column)
     4. [Table](#4-table)
     
+<br>
+
 Intro
 ------
 
@@ -34,10 +40,11 @@ Installation
 
 从 [GitHub](https://github.com/hendiko/PyLazy.git) 下载。
 
-    git clone https://github.com/hendiko/PyLazy.git
-    
+    git clone https://github.com/hendiko/PyLazy.git    
+
 或者直接下载 `lazy_mysql.py` 文件，将 `lazy_mysql.py` 文件放到项目中任意可导入目录均可。
 
+<br>
 
 Tutorial
 ---------
@@ -49,11 +56,11 @@ Tutorial
     from lazy_mysql import Engine, Pool, Table, Column
     
     engine = Engine('localhost', 'test', 'root', 'root')
-    
+
 如果要应付多线程多并发连接，可使用 **Pool** 对象来管理数据库连接，**Pool** 的作用是提供一个连接池，用以管理多个 **Engine** 对象。
 
-    pool = Pool('localhost', 'test', 'root', 'root', pool_size=4, extras=4)
-    
+    pool = Pool('localhost', 'test', 'root', 'root', pool_size=4, extras=4)    
+
 ### 2. 建立 Table 类
 
 新建一个 **Table** 对象来映射数据表，只需要新建一个类继承自 **Table** 类。
@@ -91,7 +98,7 @@ _engine 参数可以接收一个 *Engine* 或 *Pool* 实例对象。
     
     # SELECT * FROM schedule WHERE (scheduleId=1 AND taskId=2) OR (taskId=2) AND (taskName='query') LIMIT 1;
     s.select().where(s.schedule_id == 1, s.task_id == 3).where(s.task_id == 2).where_and(s.task_name == "query").go()
-    
+   
 ### 4. Insert 操作
 
     # INSERT INTO schedule SET taskName='query';
@@ -99,7 +106,7 @@ _engine 参数可以接收一个 *Engine* 或 *Pool* 实例对象。
     
     # 或者
     s.insert(taskName="query").go()
-    
+   
 ### 5. Update 操作
 
     # UPDATE schedule SET taskName='query2' WHERE (scheduleId=5) LIMIT 1;
@@ -107,17 +114,18 @@ _engine 参数可以接收一个 *Engine* 或 *Pool* 实例对象。
 
     # 或者
     s.update(taskName="query2").where(s.schedule_id == 5).go()
-    
+   
 ### 6. Delete 操作
 
     # DELETE FROM schedule WHERE (scheduleId=5) LIMIT 1;
     s.delete().where(s.schedule_id == 5).go()
-    
+   
 ### 7. Count 操作
 
     # SELECT COUNT(DISTINCT scheduleId) AS X FROM schedule WHERE (scheduleId>2) LIMIT 1;
     s.count(s.schedule_id, distinct=True).where(s.schedule_id > 2).go()
 
+<br>
 
 API
 ----
@@ -253,5 +261,3 @@ API
 #### 4.9. count(self, column=None, distinct=None)
 
 执行 COUNT 语句。
-
-

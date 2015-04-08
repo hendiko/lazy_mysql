@@ -1,5 +1,7 @@
-lazy_mysql [Chinese](./README.CH.md)
-==========================
+lazy_mysql
+=======
+
+点击查看[中文版](./README.CH.md)
 
 <br>
 
