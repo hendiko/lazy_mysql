@@ -4,15 +4,15 @@
 # Date    : 2013-12-26
 
 """
-本模块包括 Engine, Session, Table, Column, Pool 五个类对象。
-Manipulate MySQL database in a ORM style.
-目前支持SELECT, INSERT, DELETE, UPDATE, COUNT操作。
-条件支持WHERE, ORDER BY (DESC), DISTINCT, LIMIT。
+The lazy_mysql is a simple and light ORM framework based on MySQLdb.
 
-2015-4-1(1.2.6)
-1. 修改了 Column 的 in，not_in 方法，以修复在 MySQL-python 1.2.3 出现使用 Column.in() 方法时，由于 MySQL 自动转移造成参
-数不正确的 BUG。该 BUG 在 MySQL-python 1.2.5 上没有发现，
-2. Column 对象增加了 max，min 方法。
+The module provides five main classes which are Engine, Pool, Session, Table, Column.
+It provides five SQL operations, they are SELECT, INSERT, DELETE, UPDATE, COUNT.
+
+本模块包括 Engine, Pool, Session, Table, Column 五个对象。
+目前支持 SELECT, INSERT, DELETE, UPDATE, COUNT 操作。
+条件支持 WHERE, ORDER BY, GROUP BY, DISTINCT, LIMIT。
+
 """
 __author__ = 'Xavier Yin'
 __version__ = '1.2.6'
